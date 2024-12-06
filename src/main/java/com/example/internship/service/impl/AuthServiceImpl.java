@@ -1,4 +1,4 @@
-package com.example.internship.service.impl;
+package com.example.internship.service;
 
 import com.example.internship.dto.UserDTO;
 import com.example.internship.dto.authorization.AuthRegistrationDTO;
@@ -9,11 +9,8 @@ import com.example.internship.entity.VerificationToken;
 import com.example.internship.enums.TokenType;
 import com.example.internship.exceptions.ApiException;
 import com.example.internship.mappers.UserMapper;
-import com.example.internship.repository.RoleRepository;
 import com.example.internship.repository.UserRepository;
 import com.example.internship.repository.VerificationTokenRepository;
-import com.example.internship.service.AuthService;
-import com.example.internship.service.MailService;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,7 +22,6 @@ import java.util.UUID;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
@@ -57,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
         VerificationToken verificationToken = new VerificationToken(token, savedUser, TokenType.VERIFICATION);
         verificationTokenRepository.save(verificationToken);
 
-        String verificationUrl = "http://localhost:8083/api/v1/auth/verify-email?token=" + token;
+        String verificationUrl = "http://localhost:8080/api/v1/auth/verify-email?token=" + token;
         String subject = "Email Verification";
         String body = "Please click the following link to verify your email: " + verificationUrl;
 
@@ -101,7 +97,7 @@ public class AuthServiceImpl implements AuthService {
         VerificationToken passwordResetToken = new VerificationToken(token, user, TokenType.PASSWORD_RESET);
         verificationTokenRepository.save(passwordResetToken);
 
-        String resetUrl = "http://localhost:8083/api/v1/auth/reset-password?token=" + token + "&newPassword=" + passwordResetDTO.getNewPassword();
+        String resetUrl = "http://localhost:8080/api/v1/auth/reset-password?token=" + token + "&newPassword=" + passwordResetDTO.getNewPassword();
         String subject = "Password Reset Request";
         String body = "Please click the following link to reset your password: " + resetUrl;
         mailService.sendEmail(user.getEmail(), subject, body);
@@ -132,5 +128,4 @@ public class AuthServiceImpl implements AuthService {
 
         return "Password has been reset successfully. You can now log in with your new password.";
     }
-
 }
